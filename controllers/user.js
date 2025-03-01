@@ -10,7 +10,7 @@ exports.updateMe = async (req, res, next) => {
 
     const updated_user = await User.findByIdAndUpdate(user._id, filteredBody, { new: true, validateModifiedOnly: true } );
 
-    res.status(200).json({
+    return res.status(200).json({
         status: "success",
         data: updated_user,
         message: "Profile Updated successfully!"
@@ -34,7 +34,7 @@ exports.getUsers = async (req, res, next) => {
 
     // console.log(remaining_users)
 
-    res.status(200).json({
+    return res.status(200).json({
         status: "success",
         data: remaining_users,
         message: "Users found successfully!",
@@ -45,7 +45,7 @@ exports.getUsers = async (req, res, next) => {
 exports.getRequests = async (req, res, next) => {
     const requests = await FriendRequest.find({ recipient: req.user._id }).populate("sender", "_id firstName lastName");
 
-    res.status(200).json({
+    return res.status(200).json({
         status: "success",
         data: requests,
         message: "Friends requests found successfully!"
@@ -55,7 +55,7 @@ exports.getRequests = async (req, res, next) => {
 exports.getFriends = async (req, res, next) => {
     const this_user = await User.findById(req.user._id).populate("friends", "_id firstName lastName");
 
-    res.status(200).json({
+    return res.status(200).json({
         status: "success",
         data: this_user.friends,
         message: "Friends found successfully!"

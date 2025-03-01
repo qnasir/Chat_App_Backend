@@ -23,11 +23,11 @@ exports.register = async (req, res, next) => {
   const existing_user = await User.findOne({ email: email });
 
   if (existing_user && existing_user.verified) {
-    res.status(400).json({
+    return res.status(400).json({
       status: "error",
       message: "Email already in use, Please login.",
     });
-    return
+    
   } else if (existing_user) {
     const updatedUser = await User.findOneAndUpdate(
       { email: email },
@@ -176,11 +176,10 @@ exports.protect = async (req, res, next) => {
   } else if (req.cookies.jwt) {
     token = req.cookies.jwt;
   } else {
-    req.status(400).json({
+    return req.status(400).json({
       status: "error",
       message: "You are not logged In! Please log in to get access",
     });
-    return;
   }
 
   // 2) Verification of token
@@ -189,7 +188,7 @@ exports.protect = async (req, res, next) => {
   // 3) Check if user still exist
   const this_user = await User.findById(decoded.userId);
   if (!this_user) {
-    res.status(400).res.json({
+    return res.status(400).res.json({
       status: "error",
       messasge: "The user does not exist",
     });
@@ -197,7 +196,7 @@ exports.protect = async (req, res, next) => {
 
   // 4) Check if user changed their password after token was issued
   if (this_user.changedPasswordAfter(decoded.iat)) {
-    res.status(400).json({
+    return res.status(400).json({
       status: "error",
       message: "User recently updated password! Please log in again",
     });
@@ -237,7 +236,7 @@ exports.forgotPassword = async (req, res, next) => {
       attachments: [],
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       status: "success",
       message: "Reset Password link sent to email",
     });
@@ -246,7 +245,7 @@ exports.forgotPassword = async (req, res, next) => {
     user.passwordResetExpires = undefined;
 
     user.save({ validateBeforeSave: false });
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "There was an error sending the email, Please try again later.",
     });
@@ -268,11 +267,10 @@ exports.resetPassword = async (req, res, next) => {
 
   // If token has expired or submission is out of time window
   if (!user) {
-    res.status(400).json({
+    return res.status(400).json({
       status: "error",
       message: "Token is invalid or expired.",
     });
-    return;
   }
 
   // Update users password and set ResetToken & expiry to undefined
@@ -288,7 +286,7 @@ exports.resetPassword = async (req, res, next) => {
 
   // TODO => send an email to user informing about password change
 
-  res.status(200).json({
+  return res.status(200).json({
     status: "success",
     message: "Password Reseted successfully",
     token,
