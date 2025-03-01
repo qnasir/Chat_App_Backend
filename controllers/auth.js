@@ -14,6 +14,8 @@ const signToken = (userId) => jwt.sign({ userId }, process.env.JWT_SECRET);
 // User Register Route
 exports.register = async (req, res, next) => {
   const { firstName, lastName, email, password } = req.body;
+  console.log(req.body);
+  console.log(firstName, lastName, email, password)
 
   const filteredBody = filterObj(req.body, "firstName", "lastName", "email", "password");
 
